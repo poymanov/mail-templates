@@ -33,6 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'filename',
             'created_at',
             'updated_at',
+            'content',
         ],
     ]) ?>
 

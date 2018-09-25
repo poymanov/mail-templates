@@ -16,12 +16,13 @@ use yii\behaviors\TimestampBehavior;
  */
 class Template extends \yii\db\ActiveRecord
 {
+    public $content;
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'templates';
+        return '{{%templates}}';
     }
 
     public function behaviors()
@@ -37,7 +38,7 @@ class Template extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['title', 'filename'], 'required'],
+            [['title', 'filename', 'content'], 'required'],
             [['created_at', 'updated_at'], 'integer'],
             [['title', 'filename'], 'string', 'max' => 255],
             [['filename'], 'unique'],
@@ -56,5 +57,32 @@ class Template extends \yii\db\ActiveRecord
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
         ];
+    }
+
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+        $this->saveContentToFile();
+    }
+
+    public function getContentPath()
+    {
+        return Yii::getAlias('@common/storage/' . $this->filename);
+    }
+
+    public function saveContentToFile()
+    {
+        $savePath = $this->getContentPath();
+        file_put_contents($savePath, $this->content);
+        @chmod($savePath, 0777);
+    }
+
+    public function getContentFromFile()
+    {
+        $filePath = $this->getContentPath();
+
+        if (is_file($filePath)) {
+            $this->content = file_get_contents($filePath);
+        }
     }
 }
