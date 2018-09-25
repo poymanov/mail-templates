@@ -31,9 +31,10 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'title',
             'filename',
-            'created_at',
-            'updated_at',
-            'content',
+            [
+                'attribute' => 'content',
+                'value' => Html::encode($model->content)
+            ]
         ],
     ]) ?>
 
