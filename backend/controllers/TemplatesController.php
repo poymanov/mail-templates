@@ -5,6 +5,7 @@ namespace backend\controllers;
 use Yii;
 use common\models\Template;
 use common\models\TemplateSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -14,12 +15,22 @@ use yii\filters\VerbFilter;
  */
 class TemplatesController extends Controller
 {
+
     /**
      * {@inheritdoc}
      */
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
