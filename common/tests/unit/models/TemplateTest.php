@@ -25,12 +25,7 @@ class TemplateTest extends \Codeception\Test\Unit
 
     public function testSaveContentToFile()
     {
-        $filename = 'test' . time();
-
-        $model = new Template([
-            'filename' => $filename,
-            'content' => 'test content',
-        ]);
+        $model = $this->makeTemplate();
 
         $model->saveContentToFile();
 
@@ -41,13 +36,9 @@ class TemplateTest extends \Codeception\Test\Unit
 
     public function testGetContentFromFile()
     {
-        $filename = 'test' . time();
-        $content = 'test content';
-
-        $model = new Template([
-            'filename' => $filename,
-            'content' => 'test content',
-        ]);
+        $content = 'test content 2';
+        $model = $this->makeTemplate();
+        $model->content = $content;
 
         $model->saveContentToFile();
         $model->content = null;
@@ -59,4 +50,49 @@ class TemplateTest extends \Codeception\Test\Unit
         unlink($model->getContentPath());
     }
 
+    public function testDeleteContentFile()
+    {
+        $model = $this->makeTemplate();
+        $model->saveContentToFile();
+        $model->deleteContentFile();
+
+        $this->assertFalse(is_file($model->getContentPath()));
+    }
+
+    public function testCreateTemplate()
+    {
+        $model = $this->makeTemplate();
+
+        $model->save();
+
+        $this->assertTrue(is_file($model->getContentPath()));
+        unlink($model->getContentPath());
+    }
+
+    public function testDeleteTemplate()
+    {
+        $model = $this->makeTemplate();
+
+        $contentPath = $model->getContentPath();
+
+        $model->save();
+        $model->delete();
+
+        $this->assertFalse(is_file($contentPath));
+    }
+
+    private function makeTemplate()
+    {
+        $filename = 'test' . time() . '.html';
+        $content = 'test content';
+        $title = 'test';
+
+        $model = new Template([
+            'title' => $title,
+            'filename' => $filename,
+            'content' => $content,
+        ]);
+
+        return $model;
+    }
 }

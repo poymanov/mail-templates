@@ -70,6 +70,12 @@ class Template extends \yii\db\ActiveRecord
         return Yii::getAlias('@common/storage/' . $this->filename);
     }
 
+    public function afterDelete()
+    {
+        parent::afterDelete();
+        $this->deleteContentFile();
+    }
+
     public function saveContentToFile()
     {
         $savePath = $this->getContentPath();
@@ -83,6 +89,15 @@ class Template extends \yii\db\ActiveRecord
 
         if (is_file($filePath)) {
             $this->content = file_get_contents($filePath);
+        }
+    }
+
+    public function deleteContentFile()
+    {
+        $filePath = $this->getContentPath();
+
+        if (is_file($filePath)) {
+            unlink($filePath);
         }
     }
 }
